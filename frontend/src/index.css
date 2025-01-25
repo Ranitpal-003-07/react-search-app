@@ -1,7 +1,7 @@
 :root {
-  --bg-color-light: rgb(249, 247, 255);
+  --bg-color-light: #fffef7;
   --text-color-light: #333333;
-  --bg-color-dark: #1d0754;
+  --bg-color-dark: #140646;
   --text-color-dark: #ffffff;
 }
 
@@ -17,22 +17,21 @@
 
 .app {
   text-align: center;
-  padding: 50px;
+  padding:8px;
 }
 
 button {
-  padding: 10px 20px;
+  padding: 0px 0px;
   cursor: pointer;
   border: none;
-  border-radius: 5px;
-  background-color: #007bff;
+  border-radius: 50%;
   color: white;
-  font-size: 18px;
+  background: transparent;
   transition: 0.3s ease;
 }
 
 button:hover {
-  background-color: #0056b3;
+  background:transparent;
 }
 
 button:focus,
