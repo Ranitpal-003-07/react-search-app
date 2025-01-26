@@ -1,35 +1,12 @@
-import React, { useContext,useState } from 'react';
+import React, { useContext} from 'react';
 import ThemeContext from './context/ThemeContext';
 import './App.css';
-import axios from 'axios';
 import SearchBar from './Components/SearchBar';
 import QuestionList from './Components/QuestionList';
 
 const App = () => {
   const { theme, toggleTheme } = useContext(ThemeContext);
-  const [query, setQuery] = useState('');
-  const [results, setResults] = useState([]);
-  const [totalCount, setTotalCount] = useState(0);
-  const [page, setPage] = useState(1);
-  const [loading, setLoading] = useState(false);
-
-
-  const handleSearch = async () => {
-    setLoading(true);
-    try {
-      const response = await axios.post('http://localhost:5000/search', { query, page });
-      setResults(response.data.questions);
-      setTotalCount(response.data.totalCount);
-    } catch (error) {
-      console.error("Error fetching search results:", error);
-    }
-    setLoading(false);
-  };
-
-  const handlePagination = (newPage) => {
-    setPage(newPage);
-    handleSearch();
-  };
+  
 
 
   return (
@@ -46,17 +23,10 @@ const App = () => {
             </svg>
           }
         </button>
-        <SearchBar theme={theme} query={query} setQuery={setQuery} handleSearch={handleSearch} />
+        <SearchBar theme={theme}/>
       </div>
       <div className="list">
-      <QuestionList
-        theme={theme}
-        results={results}
-        loading={loading}
-        totalCount={totalCount}
-        page={page}
-        handlePagination={handlePagination}
-      />
+        <QuestionList theme={theme}/>
       </div>
     </div>
   );

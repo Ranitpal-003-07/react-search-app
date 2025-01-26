@@ -1,70 +1,97 @@
-import React from 'react';
-import '../Styles/SearchBar.css';
+import React, { useState, useEffect } from 'react';
 
-const darkTheme = {
-  backgroundColor: '#ffffff',
-  color: '#000000',
-  border: '1px solid #ddd',
-  padding: '10px',
-};
+const SearchBar = () => {
+  const [query, setQuery] = useState('');
+  const [questions, setQuestions] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-const lightTheme = {
-  backgroundColor: '#1d4ed8',
-  color: '#ffffff',
-  border: '1px solid #444',
-  padding: '10px',
-};
-
-export default function SearchBar({ theme, query, setQuery, handleSearch }) {
-
-    
-  const toggleDropdown = () => {
-    document.getElementById('dropdown').classList.toggle('hidden');
+  const handleChange = (e) => {
+    setQuery(e.target.value);
   };
 
+  const searchQuestions = async () => {
+    if (query.trim() === '') {
+      setQuestions([]);
+      return;
+    }
+
+    setLoading(true);
+    setError('');
+
+    try {
+      const response = await fetch(`http://localhost:5000/api/search?query=${query}`);
+      const data = await response.json();
+
+      if (data.questions && data.questions.length > 0) {
+        setQuestions(data.questions);
+      } else {
+        setQuestions([]);
+      }
+    } catch (err) {
+      setError('Error fetching results');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      searchQuestions();
+    }, 500); 
+
+    return () => clearTimeout(delayDebounceFn); 
+  }, [query]);
+
   return (
-    <div className="searchbox">
-      <form className="form-container">
-        <div className="form-group">
-          <button
-            id="dropdown-button"
-            style={theme === 'light' ? lightTheme : darkTheme}
-            className="dropdown-button"
-            type="button"
-            onClick={toggleDropdown}
-          >
-            All categories
-            <svg className="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-              <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 4 4 4-4" />
-            </svg>
-          </button>
-          <div id="dropdown" className="dropdown-menu hidden">
-            <ul>
-              <li><button type="button" className="dropdown-item">Mockups</button></li>
-              <li><button type="button" className="dropdown-item">Templates</button></li>
-              <li><button type="button" className="dropdown-item">Design</button></li>
-              <li><button type="button" className="dropdown-item">Logos</button></li>
-            </ul>
-          </div>
-          <div className="search-box">
-            <input
-              type="search"
-              id="search-dropdown"
-              className="search-input"
-              placeholder="Search Mockups, Logos, Design Templates..."
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              required
-            />
-            <button type="submit" onClick={handleSearch} className="search-button">
-              <svg className="search-icon" xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 20 20">
-                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
-              </svg>
-              <span className="sr-only">Search</span>
-            </button>
-          </div>
-        </div>
-      </form>
+    <div>
+      <h1>Search Questions</h1>
+      <input
+        type="text"
+        value={query}
+        onChange={handleChange}
+        placeholder="Search for questions..."
+        style={{ padding: '8px', width: '300px', marginBottom: '20px' }}
+      />
+      {loading && <p>Loading...</p>}
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+
+      <div id="searchResults">
+        {questions.length === 0 && !loading && !error ? (
+          <p>No questions found.</p>
+        ) : (
+          questions.map((question) => (
+            <div key={question._id} className="question-item" style={{ borderBottom: '1px solid #ddd', padding: '10px', marginBottom: '10px' }}>
+              <h3>{question.title}</h3>
+
+              {question.type === 'ANAGRAM' && question.blocks && (
+                <div>
+                  <p><strong>Anagram Type:</strong> {question.anagramType}</p>
+                  <p><strong>Rearrange the letters:</strong></p>
+                  <div style={{ display: 'flex', gap: '10px' }}>
+                    {question.blocks.map((block, index) => (
+                      <div
+                        key={index}
+                        style={{
+                          padding: '10px',
+                          backgroundColor: block.showInOption ? 'lightgray' : 'transparent',
+                          fontWeight: block.isAnswer ? 'bold' : 'normal',
+                        }}
+                      >
+                        {block.text}
+                      </div>
+                    ))}
+                  </div>
+                  <p><strong>Solution:</strong> {question.solution}</p>
+                </div>
+              )}
+            </div>
+          ))
+        )}
+      </div>
     </div>
   );
-}
+};
+
+export default SearchBar;

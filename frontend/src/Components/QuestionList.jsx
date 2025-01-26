@@ -1,63 +1,79 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import '../Styles/QuestionList.css';
 
-const darkTheme = {
-  background: 'none',
-  color: '#000000',
-  border: '3px solid white',
-  padding: '10px',
-};
+const QuestionList = ({theme}) => {
+  const [questions, setQuestions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [page, setPage] = useState(1);
+  const [pageSize] = useState(100);
 
-const lightTheme = {
-  backgroundColor: 'lavendar',
-  color: '#ffffff',
-  border: '3px solid #444',
-  padding: '10px',
-};
+  useEffect(() => {
+    const fetchQuestions = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/search', {
+          params: { page, pageSize },
+        });
+        setQuestions(response.data.questions);
+      } catch (err) {
+        setError('Error fetching questions');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
+    fetchQuestions();
+  }, [page, pageSize]);
 
-const QuestionList = ({ theme,results, loading, totalCount, page, handlePagination }) => {
+  const handleNextPage = () => setPage((prevPage) => prevPage + 1);
+  const handlePreviousPage = () => setPage((prevPage) => (prevPage > 1 ? prevPage - 1 : 1));
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>{error}</div>;
+  }
+
   return (
-    <div 
-      style={theme === 'light' ? lightTheme : darkTheme}
-      className='Qlist'>
-        {loading && <div>Loading...</div>}
+    <div className={`question-list-container ${theme}-theme`}>
+      <h1>All Questions</h1>
 
-      <ul>
-        {results.map((question, index) => (
-          <li key={index}>
-            <h3>{question.title}</h3>
-            <p>Type: {question.type}</p>
-            {question.anagramType && <p>Anagram Type: {question.anagramType}</p>}
-            
-            <div>
-              <p>Blocks:</p>
-              <ul>
-                {question.blocks.map((block, idx) => (
-                  <li key={idx}>
-                    {block.text} {block.showInOption ? "(Option)" : ""} 
-                    {block.isAnswer ? "(Answer)" : ""}
-                  </li>
-                ))}
-              </ul>
-            </div>
+      <div className="question-container">
+        <ul>
+          {questions.map((question, index) => (
+            <li key={index}>
+              <h3>{question.title}</h3>
+              <p>Type: {question.type}</p>
+              {question.anagramType && <p>Anagram Type: {question.anagramType}</p>}
 
-            <p>Solution: {question.solution}</p>
-          </li>
-        ))}
-      </ul>
+              <div>
+                <p>Blocks:</p>
+                <ul>
+                  {question.blocks.map((block, idx) => (
+                    <li key={idx}>
+                      {block.text} {block.showInOption ? '(Option)' : ''} 
+                      {block.isAnswer ? '(Answer)' : ''}
+                    </li>
+                  ))}
+                </ul>
+              </div>
 
-      {totalCount > 0 && (
-        <div>
-          <button onClick={() => handlePagination(page - 1)} disabled={page === 1}>
-            Previous
-          </button>
-          <span> Page {page} </span>
-          <button onClick={() => handlePagination(page + 1)} disabled={results.length < 10}>
-            Next
-          </button>
-        </div>
-      )}
+              <p className="solution">Solution: {question.solution}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div className="pagination-controls">
+        <button onClick={handlePreviousPage} disabled={page === 1}>
+          Previous 100
+        </button>
+        <button onClick={handleNextPage}>Next 100</button>
+      </div>
     </div>
   );
 };
