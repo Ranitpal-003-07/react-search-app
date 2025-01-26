@@ -27,26 +27,18 @@ button:focus-visible {
 
 
 
-[data-theme="light"]body{
-  background-color: whitesmoke;
-}
-
-
-[data-theme="dark"]body{
-  background-color: black;
-}
-
-
 [data-theme="light"] button {
   background-color: #f0f0f0; 
   color: #333; 
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
+
 [data-theme="light"] button:hover {
   background-color: #e0e0e0; 
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15); 
 }
+
 
 [data-theme="dark"] button {
   background-color: #222; 
