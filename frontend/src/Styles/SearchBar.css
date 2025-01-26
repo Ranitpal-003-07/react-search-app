@@ -1,6 +1,4 @@
-
 .form-container {
-    max-width: 700px;
     margin-left: 20px;
     margin-right: 20px;
 }
@@ -11,10 +9,8 @@
 }
 
 .dropdown-button {
-    width: 200px;
+    width: 150px;
     padding: 5px 5px;
-    background-color: #f3f4f6;
-    border: 1px solid #ccc;
     border-radius: 5px 0 0 5px;
     cursor: pointer;
     display: flex;
@@ -22,6 +18,7 @@
     text-align: center;
     justify-content: center;
     font-size: 16px;
+    font-weight: 650;
 }
 
 .dropdown-button:hover {
@@ -29,8 +26,8 @@
 }
 
 .icon {
-    width: 12px;
-    height: 12px;
+    width: 10px;
+    height: 10px;
     margin-left: 8px;
 }
 
@@ -66,18 +63,20 @@
 }
 
 .search-box {
-    position: relative;
-    width: 100%;
+    width: 500px;
+    
 }
 
 .search-input {
-    width: 100%;
+    width:100%;
     padding: 10px;
     border: 1px solid #ccc;
     border-left: 0;
     border-radius: 0 5px 5px 0;
     font-size: 16px;
     outline: none;
+    color: rgb(3, 3, 52);
+    font-weight: 650;
 }
 
 .search-button {
@@ -91,10 +90,11 @@
     padding: 0 15px;
     border-radius: 0 5px 5px 0;
     cursor: pointer;
+    color: #ffffff72;
 }
 
 .search-button:hover {
-    background-color: #1e40af;
+    background-color: #2ebffd;
 }
 
 .search-icon {
